@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!-- Trial external layout template -->
+<template id="external_layout_boxed" inherit_id="web.external_layout_boxed">
+    <xpath expr="//div[@name='company_address']" position="inside">
+        <div t-if="docs.company_id.phone">
+            Tel: <span t-field="docs.company_id.phone"/>
+        </div>
+        <div t-if="docs.company_id.email" >
+            E-mail:
+            <span t-field="docs.company_id.email"/>
+        </div>
+    </xpath>
+</template>
+
+<!-- Product Trial From Template -->
+<template id="product_trial_form_template">
+    <t t-call="web.html_container">
+        <t t-call="web.external_layout">
+            <div class="page oe_trial_form">
+                <h2 class="mt16" align="center"><b>PRODUCT TRIAL FORM</b></h2>
+                <div style="margin-left:75%;">
+                    <strong>Trial Order Number: </strong>
+                    <span class="col-6" t-field="docs.name"/>
+                </div>
+                <div style="margin-left:75%;">
+                    <strong>Trial Order Date: </strong>
+                    <span class="col-6" t-field="docs.date_order" t-options='{"widget": "date"}'/>
+                </div>
+                <br/>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <td><b>BUYER INFORMATION</b></td>
+                            <td><b>TRIAL LOCATION INFORMATION</b></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div t-field="docs.partner_invoice_id"
+                                t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
+                                <div>
+                                    E-mail:
+                                    <span t-if="docs.partner_invoice_id.email" t-field="docs.partner_invoice_id.email"/>
+                                </div>
+                            </td>
+                            <td>
+                                <div t-field="docs.partner_shipping_id"
+                                t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
+                                <div>
+                                    E-mail:
+                                    <span t-if="docs.partner_shipping_id.email" t-field="docs.partner_shipping_id.email"/>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table class="table table-bordered">
+                <tr>
+                    <th name="th_item" class="text-center">Item</th>
+                    <th name="th_description" class="text-center">Description</th>
+                    <th name="th_priceunit" class="text-center">Unit Price</th>
+                    <th name="th_imei" class="text-center">IMEI</th>
+                    <th name="th_quantity" class="text-center">Quantity</th>
+                    <th name="th_startdate" class="text-center">Start Date</th>
+                    <th name="th_enddate" class="text-center">End Date</th>
+                </tr>
+                <tbody class="sale_tbody">
+                    <t t-foreach="docs.order_line" t-as="line">
+                        <tr t-att-class="'bg-200 font-weight-bold o_line_section' if line.display_type == 'line_section' else 'font-italic o_line_note' if line.display_type == 'line_note' else ''">
+                            <t t-if="not line.display_type">
+                                <td name="td_index"><span t-esc="line_index+1"/></td>
+                                <td name="td_name"><span t-field="line.name"/></td>
+                                <td name="td_priceunit" class="text-right">
+                                    <span t-field="docs.currency_id.symbol"/>
+                                    <span t-field="line.price_unit"/>
+                                </td>
+                                <td name="td_serial_no" class="text-center">
+                                    <span t-field="line.serial_no"/>
+                                </td>
+                                <td name="td_quantity" class="text-center">
+                                    <span t-field="line.product_uom_qty" t-options='{"widget": "integer"}'/>
+                                </td>
+                                <td name="td_startdate" class="text-center">
+                                    <span t-field="line.start_date"/>
+                                </td>
+                                <td name="td_enddate" class="text-center">
+                                    <span t-field="line.end_date"/>
+                                </td>
+                            </t>
+                        </tr>
+                    </t>
+                </tbody>
+                </table>
+                <br/>
+                <div>
+                    <p>
+                        <b>Remarks:</b><br/>
+                        1. Clients will solely responsible for the trial products during the trial period.<br/>
+                        2. Any loss or damage to the trial products will be charged directly to the Clients at the Unit Prices stated above.
+                    </p>
+                </div>
+                <br/>
+                <div class="row">
+                    <br/>
+                    <div class="col-6">
+                        <p style="display:inline;"></p>
+                    </div>
+                    <div class="col-6" style="margin-left:150px;">
+                        <p>Acknowledged and Acccepted by:</p>
+                    </div>
+                </div>
+                <div style="padding-top:90px;">
+                    <div class="row">
+                        <div class="col-6">
+                            <p style="padding: 0px; margin:0px;">_______________________________________</p>
+                            <p t-field="docs.user_id" style="padding: 0px; margin:0px;"/>
+                            <p t-field="docs.company_id" style="padding: 0px; margin:0px;"/>
+                            <p style="padding-top:20px;">Date: <span t-field="docs.date_order" t-options='{"widget": "date"}'/></p>
+                        </div>
+                        <div class="col-6" style="margin-left:150px;">
+                            <p style="padding: 0px; margin:0px;">_______________________________________</p>
+                            <p style="padding: 0px; margin:0px;">Signature &amp; Company Chop</p>
+                            <p style="padding-top:50px;">Date: </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </t>
+</template>
+
+</odoo>

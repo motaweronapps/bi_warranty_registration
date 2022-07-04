@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+
+        <record id="view_account_invoice_line_tax" model="ir.ui.view">
+            <field name="name">account.move.line.tax.form.inherit</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//page/field[@name='invoice_line_ids']/tree/field[@name='name']" position="after">
+                    <field name="serial_no" />
+                </xpath>
+                <xpath expr="//button[@name='action_invoice_sent']" position="after">
+                    <button name="%(action_view_invoice_barcode)d" string="Scan" 
+                        type="action" states="draft" class="oe_highlight" />
+                </xpath>
+            </field>
+        </record>
+
+
+    <template id="report_invoice_report_inherit_added_Serial_no" inherit_id="account.report_invoice_document">
+        <xpath expr="//table[@class='table table-sm o_main_table']/thead/tr/th[@name='th_description']" position="after">
+            <th>Serial No</th>
+        </xpath>
+        <xpath expr="//table[@class='table table-sm o_main_table']/tbody/t/tr/t/td[@name='account_invoice_line_name']" position="after">
+            <td><span t-field="line.serial_no"/></td>
+        </xpath>
+    </template>
+	</data>
+</odoo>

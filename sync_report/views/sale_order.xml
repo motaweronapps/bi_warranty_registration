@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sale_order_inherit_dates" model="ir.ui.view">
+        <field name="name">sale.inherit.dates</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//page/field[@name='order_line']/tree/field[@name='product_uom']" position="after">
+                <field name="start_date" />
+                <field name="end_date" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="stock_picking_inherit_dates" model="ir.ui.view">
+        <field name="name">stock.picking.inherit01</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//form/field[@name='use_create_lots']" position="after">
+                <field name="remarks" />
+            </xpath>
+        </field>
+    </record>
+</odoo>
