@@ -1,0 +1,1 @@
+from . import warranty_reg_inherit, warranty_product

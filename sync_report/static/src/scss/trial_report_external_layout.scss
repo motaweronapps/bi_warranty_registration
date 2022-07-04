@@ -1,0 +1,26 @@
+.o_report_layout_boxed {
+    .oe_trial_form {
+        table {
+            tbody {
+                tr {
+                    td {
+                        background-color: white !important;
+                        border-right: 1px;
+                    }
+                }
+            }
+            thead {
+                tr {
+                    td {
+                        background-color: white !important;
+                        border-right: 1px;
+                    }
+                    th {
+                        background-color: white !important;
+                        border-right: 1px;
+                    }
+                }
+            }
+        }
+    }
+}

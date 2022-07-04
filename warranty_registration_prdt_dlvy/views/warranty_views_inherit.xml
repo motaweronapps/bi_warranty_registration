@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="bi_inherit_product_warranty_renewal" model="ir.ui.view">
+			<field name="name">prdct.dlvry.inherit.product.warranty.renewal</field>
+			<field name="model">product.product</field>
+			<field name="inherit_id" ref="product.product_normal_form_view" />
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='create_warranty_with_saleorder']" position="after">
+							<field name="warranty_sale_config" invisible="1"/>
+							<field name="create_once_delivered" attrs="{'invisible':[('warranty_sale_config','=', False)]}"/>
+				</xpath>
+			</field>
+		</record>
+    </data>
+</odoo>

@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="custom_header">
+        <div class="header">
+            <div class="row">
+                <div class="col-6 text-left">
+                    <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 45px;" alt="Logo"/>
+                </div>
+                <div class="col-6 text-left" name="company_address">
+                    <t t-esc="o.company_id.street"/><br/>
+                    <t t-esc="o.company_id.street2"/><br/>
+                    <t t-esc="o.company_id.city"/>,
+                    <t t-esc="o.company_id.state_id.name"/>
+                    <t t-esc="o.company_id.zip"/><br/>
+                    <t t-esc="o.company_id.country_id.name"/><br/>
+                </div>
+            </div>
+            <div class="col-12">
+                <div style="border-bottom: 1px solid black;"/>
+            </div>
+        </div>
+        <div class="article o_report_layout_standard" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
+            <t t-call="web.address_layout"/>
+            <t t-raw="0"/>
+        </div>
+    </template>
+    <template id="report_delivery_document_inherit_novelte" inherit_id="stock.report_delivery_document">
+        <xpath expr="//t[@t-call='web.external_layout']" position="replace">
+            <t t-call="sync_report.custom_header">
+                <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)" />
+                <t t-set="partner" t-value="o.partner_id or (o.move_lines and o.move_lines[0].partner_id) or False"/>
+                <t t-if="partner" name="partner_header">
+                    <t t-set="address">
+                        <div t-esc="partner"
+                        t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True}'/>
+                   </t>
+                </t>
+                <div class="page">
+                <h3><strong><center>Delivery Note</center></strong></h3>
+                <h2>
+                    <strong>Delivery Note #</strong><br/>
+                    <span t-field="o.name"/>
+                </h2>
+                <div class="row mt32 mb32">
+                    <div t-if="o.origin" class="col-auto" name="div_origin">
+                        <strong>Sales Order #</strong>
+                        <p t-field="o.origin"/>
+                    </div>
+                    <div t-if="o.state" class="col-auto" name="div_sched_date">
+                        <strong>Shipping Date:</strong>
+                        <t t-if="o.state == 'done'">
+                            <p t-field="o.date_done"/>
+                        </t>
+                        <t t-if="o.state != 'done'">
+                            <p t-field="o.scheduled_date"/>
+                       </t>
+                    </div>
+                </div>
+                <table class="table table-sm" t-if="o.state!='done'" name="stock_move_table">
+                    <thead>
+                        <tr>
+                            <th name="th_sm_product"><strong>Product</strong></th>
+                            <th name="th_sm_serialno"><strong>Serial Number</strong></th>
+                            <th name="th_sm_quantity"><strong>Quantity</strong></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="lines" t-value="o.move_lines.filtered(lambda x: x.product_uom_qty)"/>
+                        <tr t-foreach="lines" t-as="move">
+                            <td>
+                                <span t-field="move.product_id"/>
+                                <p t-if="move.description_picking != move.product_id.name">
+                                    <span t-field="move.description_picking"/>
+                                </p>
+                            </td>
+                            <td name="th_sm_serialno"><span t-field="move.serial_no"/></td>
+                            <td>
+                                <span t-field="move.product_uom_qty"/>
+                                <span t-field="move.product_uom"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="mt-5">
+    <div class="row">
+        <div class="col-6">
+            <p style="display:inline;">Sender:</p>
+            <span t-esc="res_company.name"/>
+        </div>
+        <div class="col-6" style="margin-left:150px;">
+            <p>Recipient:</p>
+            <p>Received By</p>
+        </div>
+    </div>
+</div>
+                <div style="padding-top:150px;">
+            <div class="row">
+                <div class="col-6">
+                    <p style="padding: 0px; margin:0px;">_______________________________________</p>
+                    <p style="padding: 0px; margin:0px;">Signature &amp; Company Chop</p>
+                    <p style="margin:0px">Name:</p>
+                    <p style="margin-top:50px" t-field="res_company.name"/>
+                    <p>Date:</p>
+                </div>
+                <div class="col-6" style="margin-left:150px;">
+                    <p style="padding: 0px; margin:0px;">_______________________________________</p>
+                    <p t-field="o.partner_id" style="padding: 0px; margin:0px;"/>
+                    <p style="padding-top:50px;">Date:</p>
+                </div>
+            </div>
+        </div>
+                <div style="page-break-before: always;" class="font-weight-bold">
+                    <center><u style="font-size:35px;">Installation Form</u></center>
+                    <table class="table table-md border border-dark mt-4" style="margin-left: auto;margin-right: auto;">
+                        <tr>
+                            <td style="width: 50%;" class="border border-dark"><p style="font-size:17px; margin: 0px;">Reference No. :</p>
+                            </td>
+                            <td style="width: 50%;" class="border border-dark"><span t-field="o.sale_id" style="font-size:17px; margin: 0px;"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%;" class="border border-dark"><p style="font-size:17px; margin: 0px;">Installation Date:</p>
+                            </td>
+                            <td style="width: 50%;" class="border border-dark"><span t-field="o.installation_date" style="font-size:17px; margin: 0px;"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%;" class="border border-dark"><p style="font-size:17px; margin: 0px;">Company Name:</p>
+                            </td>
+                            <td style="width: 50%;" class="border border-dark"><span t-field="o.sale_id.partner_id.parent_id.name" style="font-size:17px; margin: 0px;"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%;" class="border border-dark"><p style="font-size:17px; margin: 0px;">Installation Address:</p>
+                            </td>
+                            <td style="width: 50%;" class="border border-dark">
+                                <span t-field="o.partner_id.street" style="font-size:17px; margin: 0px;"/>, <span t-field="o.partner_id.street2" style="font-size:17px; margin: 0px;"/>, <span t-field="o.partner_id.city" style="font-size:17px; margin: 0px;"/>, <span t-field="o.partner_id.state_id.name" style="font-size:17px; margin: 0px;"/>, <span t-field="o.partner_id.zip" style="font-size:17px; margin: 0px;"/>, <span t-field="o.partner_id.country_id.name" style="font-size:17px; margin: 0px;"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%;" class="border border-dark"><p style="font-size:17px; margin: 0px;">Contact Person:</p>
+                            </td>
+                            <td style="width: 50%;" class="border border-dark"><span t-field="o.sale_id.partner_id.name" style="font-size:17px; margin: 0px;"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%;" class="border border-dark"><p style="font-size:17px; margin: 0px;">Commencement Date of Service:</p>
+                            </td>
+                            <td style="width: 50%;" class="border border-dark"><span t-field="o.installation_date" style="font-size:17px; margin: 0px;"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%;" class="border border-dark"><p style="font-size:17px; margin: 0px;">Model:</p>
+                            </td>
+                            <td style="width: 50%;" class="border border-dark">
+                                <t t-foreach="o.move_ids_without_package" t-as="line">
+                                    <span t-field="line.product_id" style="font-size:17px; margin: 0px;"/>,
+                                </t>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%;" class="border border-dark"><p style="font-size:17px; margin: 0px;">Serial No.:</p>
+                            </td>
+                            <td style="width: 50%;" class="border border-dark">
+                                <t t-foreach="o.move_ids_without_package" t-as="line">
+                                    <span t-field="line.serial_no" style="font-size:17px; margin: 0px;"/>,
+                                </t>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%;" class="border border-dark"><p style="margin-top: 34px; font-size: 17px;">Remarks:</p>
+                            </td>
+                            <td style="width: 50%; height: 100px;" class="border border-dark">
+                                <span t-field="o.remarks" style="font-size:17px; margin: 0px;"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%;" class="border border-dark"><p style="margin-top: 34px; font-size: 17px;">Acknowledged &amp; Accepted by:</p>
+                            </td>
+                            <td style="width: 50%; height: 150px;" class="border border-dark">
+                                Authorized Signature &amp; Company Chop:
+                                <p style="margin-top:60px;">Name:</p>
+                                <p style="margin-top:10px; margin-bottom: 0px;">Date:</p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <table class="table table-sm mt48" t-if="o.move_line_ids and o.state=='done'" name="stock_move_line_table">
+                    <t t-set="has_serial_number" t-value="False"/>
+                    <t t-set="has_serial_number" t-value="o.move_line_ids.mapped('lot_id')" groups="stock.group_lot_on_delivery_slip"/>
+                    <thead>
+                        <tr>
+                            <th name="th_sml_product"><strong>Product</strong></th>
+                            <t name="lot_serial" t-if="has_serial_number">
+                                <th>
+                                    Lot/Serial Number
+                                </th>
+                            </t>
+                            <th name="th_sml_quantity" class="text-center"><strong>Quantity</strong></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <!-- This part gets complicated with different use cases (additional use cases in extensions of this report):
+                            1. If serial numbers are used and set to print on delivery slip => print lines as is, otherwise group them by overlapping
+                                product + description + uom combinations
+                            2. If any packages are assigned => split products up by package (or non-package) and then apply use case 1 -->
+                        <!-- If has destination packages => create sections of corresponding products -->
+                        <t t-if="o.has_packages" name="has_packages">
+                            <t t-set="packages" t-value="o.move_line_ids.mapped('result_package_id')"/>
+                            <t t-foreach="packages" t-as="package">
+                                <t t-call="stock.stock_report_delivery_package_section_line"/>
+                                <t t-set="package_move_lines" t-value="o.move_line_ids.filtered(lambda l: l.result_package_id == package)"/>
+                                <!-- If printing lots/serial numbers => keep products in original lines -->
+                                <t t-if="has_serial_number">
+                                    <tr t-foreach="package_move_lines" t-as="move_line">
+                                        <t t-call="stock.stock_report_delivery_has_serial_move_line"/>
+                                    </tr>
+                                </t>
+                                <!-- If not printing lots/serial numbers => merge lines with same product+description+uom -->
+                                <t t-else="">
+                                    <t t-set="aggregated_lines" t-value="package_move_lines._get_aggregated_product_quantities()"/>
+                                    <t t-call="stock.stock_report_delivery_aggregated_move_lines"/>
+                                </t>
+                            </t>
+                            <!-- Make sure we do another section for package-less products if they exist -->
+                            <t t-set="move_lines" t-value="o.move_line_ids.filtered(lambda l: not l.result_package_id)"/>
+                            <t t-if="move_lines" name="no_package_move_lines">
+                                <t t-call="stock.stock_report_delivery_no_package_section_line" name="no_package_section"/>
+                                <t t-if="has_serial_number">
+                                    <tr t-foreach="move_lines" t-as="move_line">
+                                        <t t-call="stock.stock_report_delivery_has_serial_move_line"/>
+                                    </tr>
+                                </t>
+                                <t t-else="">
+                                    <t t-set="aggregated_lines" t-value="move_lines._get_aggregated_product_quantities()"/>
+                                    <t t-if="aggregated_lines">
+                                        <t t-call="stock.stock_report_delivery_aggregated_move_lines"/>
+                                    </t>
+                                </t>
+                            </t>
+                        </t>
+                        <!-- No destination packages -->
+                        <t t-else="">
+                            <!-- If printing lots/serial numbers => keep products in original lines -->
+                            <t t-if="has_serial_number">
+                                <tr t-foreach="o.move_line_ids" t-as="move_line">
+                                    <t t-call="stock.stock_report_delivery_has_serial_move_line"/>
+                                </tr>
+                            </t>
+                            <!-- If not printing lots/serial numbers => merge lines with same product -->
+                            <t t-else="" name="aggregated_move_lines">
+                                <t t-set="aggregated_lines" t-value="o.move_line_ids._get_aggregated_product_quantities()"/>
+                                    <t t-call="stock.stock_report_delivery_aggregated_move_lines"/>
+                            </t>
+                        </t>
+                    </tbody>
+                </table>
+                <t t-set="backorders" t-value="o.backorder_ids.filtered(lambda x: x.state not in ('done', 'cancel'))"/>
+                <t t-if="o.backorder_ids and backorders">
+                    <p>
+                        <span>All items couldn't be shipped, the following items will be shipped as soon as they become available.</span>
+                    </p>
+                    <table class="table table-sm" name="stock_backorder_table">
+                        <thead>
+                            <tr>
+                                <th name="th_sb_product"><strong>Product</strong></th>
+                                <th name="th_sb_quantity" class="text-center"><strong>Quantity</strong></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="backorders" t-as="backorder">
+                                <t t-set="bo_lines" t-value="backorder.move_lines.filtered(lambda x: x.product_uom_qty)"/>
+                                <tr t-foreach="bo_lines" t-as="bo_line">
+                                    <td>
+                                        <span t-field="bo_line.product_id"/>
+                                        <p t-if="bo_line.description_picking != bo_line.product_id.name">
+                                            <span t-field="bo_line.description_picking"/>
+                                        </p>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="bo_line.product_uom_qty"/>
+                                        <span t-field="bo_line.product_uom"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </t>
+                <div t-if="o.signature" class="mt32 ml64 mr4" name="signature">
+            <div class="offset-8">
+                <strong>Signature</strong>
+            </div>
+            <div class="offset-8">
+                <img t-att-src="image_data_uri(o.signature)" style="max-height: 4cm; max-width: 8cm;"/>
+            </div>
+            <div class="offset-8 text-center">
+                <p t-field="o.partner_id.name"/>
+            </div>
+        </div>
+            </div>
+            </t>
+        </xpath>
+    </template>
+</odoo>
